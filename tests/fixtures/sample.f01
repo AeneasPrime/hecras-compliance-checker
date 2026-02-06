@@ -1,0 +1,37 @@
+Flow Title=Beargrass Creek Steady Flow Data
+Program Version=6.10
+
+Number of Profiles= 4
+Profile Names=10yr,50yr,100yr,500yr
+
+River Rch & RM=Beargrass Creek,Upper Reach,5000
+    1500    3200    5000    8500
+
+Boundary for River Rch & Prof#=Beargrass Creek,Upper Reach, 1
+Up Type= 0
+Dn Type= 3
+Dn Slope=0.002
+
+Boundary for River Rch & Prof#=Beargrass Creek,Upper Reach, 2
+Up Type= 0
+Dn Type= 3
+Dn Slope=0.002
+
+Boundary for River Rch & Prof#=Beargrass Creek,Upper Reach, 3
+Up Type= 0
+Dn Type= 3
+Dn Slope=0.002
+
+Boundary for River Rch & Prof#=Beargrass Creek,Upper Reach, 4
+Up Type= 0
+Dn Type= 3
+Dn Slope=0.002
+
+DSS Import StartDate=
+DSS Import StartTime=
+DSS Import EndDate=
+DSS Import EndTime=
+DSS Import GetInterval= 0
+DSS Import Interval=
+DSS Import GetPeak= 0
+DSS Import FillOption= 0

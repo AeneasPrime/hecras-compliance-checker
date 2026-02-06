@@ -1,0 +1,18 @@
+Flow Title=Beargrass Creek 100yr Unsteady Event
+Program Version=6.10
+
+Boundary Location=Beargrass Creek,Upper Reach,5000
+Interval=15MIN
+Flow Hydrograph= 10
+     500    1000    2500    5000    7500    8500    7000    4000    2000    1000
+
+Boundary Location=Beargrass Creek,Upper Reach,3500
+Interval=1HOUR
+Lateral Inflow Hydrograph= 6
+       0     200     800     600     300       0
+
+Boundary Location=Beargrass Creek,Upper Reach,1000
+Friction Slope=0.002
+
+Use Restart= 0
+Restart Filename=

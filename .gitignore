@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Virtual environment
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Testing
+.pytest_cache/
+
+# OS
+.DS_Store
+
+# HEC-RAS temp files
+*.hdf
+*.tmp
+
+# Generated reports
+output/
+compliance_report.pdf
+
+# Claude Code local settings
+.claude/

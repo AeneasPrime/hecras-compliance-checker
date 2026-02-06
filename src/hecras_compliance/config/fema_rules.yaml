@@ -1,0 +1,193 @@
+# =============================================================================
+# FEMA & Federal Compliance Rules for HEC-RAS Models
+# =============================================================================
+#
+# Each rule defines a single compliance check applied to parsed HEC-RAS data.
+#
+# Fields:
+#   id           – Unique rule identifier (e.g. "FEMA-MANN-001")
+#   name         – Short human-readable label
+#   description  – What is checked and why it matters
+#   severity     – error | warning | info
+#   citation     – Exact regulatory or guidance reference
+#   check_type   – range | exact | exists | custom
+#   parameters   – Depends on check_type:
+#                    range  → min, max  (inclusive bounds)
+#                    exact  → value     (single expected value)
+#                    exists → (none)
+#                    custom → handler   (Python function path)
+#   applies_to   – Dot-path into the parsed data model:
+#                    geometry.cross_sections[].field
+#                    geometry.bridges[].field
+#                    plan.encroachment.field
+#                    flow.profiles
+#                    flow.steady_boundaries
+# =============================================================================
+
+rules:
+
+  # ---------------------------------------------------------------------------
+  # Manning's n Values
+  # ---------------------------------------------------------------------------
+
+  - id: FEMA-MANN-001
+    name: Channel Manning's n range
+    description: >
+      Manning's n for the main channel must fall within the range of published
+      values for natural and improved channels.  Values below 0.020 indicate
+      unrealistically smooth surfaces; values above 0.150 are outside the
+      range of any documented channel type.  Out-of-range values often signal
+      data-entry errors that can materially affect computed water-surface
+      elevations.
+    severity: error
+    citation: "FEMA Guidelines and Specifications for Flood Hazard Mapping Partners, Appendix C: Guidance for Riverine Flooding Analyses and Mapping"
+    citation_url: "https://www.fema.gov/sites/default/files/nepa/Guidelines_and_Specifications_for_Flood_Hazard_Mapping_Partners_Appendix_C_Guidance_for_Riverine_Flooding_Analyses_and_Mapping__Nov_2009_.pdf#page=37"
+    check_type: range
+    parameters:
+      min: 0.020
+      max: 0.150
+    applies_to: geometry.cross_sections[].manning_n_channel
+
+  - id: FEMA-MANN-002
+    name: Overbank Manning's n range
+    description: >
+      Manning's n for left and right overbank areas must fall within published
+      values.  Overbanks typically carry higher roughness than channels due to
+      vegetation, structures, and irregular terrain.  Values below 0.020 are
+      unrealistic for any floodplain surface; values above 0.200 exceed
+      documented ranges even for dense forest or heavy brush.
+    severity: error
+    citation: "FEMA Guidelines and Specifications for Flood Hazard Mapping Partners, Appendix C: Guidance for Riverine Flooding Analyses and Mapping"
+    citation_url: "https://www.fema.gov/sites/default/files/nepa/Guidelines_and_Specifications_for_Flood_Hazard_Mapping_Partners_Appendix_C_Guidance_for_Riverine_Flooding_Analyses_and_Mapping__Nov_2009_.pdf#page=37"
+    check_type: range
+    parameters:
+      min: 0.020
+      max: 0.200
+    applies_to: geometry.cross_sections[].manning_n_overbank
+
+  # ---------------------------------------------------------------------------
+  # Expansion / Contraction Coefficients
+  # ---------------------------------------------------------------------------
+
+  - id: FEMA-COEF-001
+    name: Contraction coefficient range
+    description: >
+      Contraction coefficients control energy losses where the flow area
+      narrows.  The HEC-RAS Hydraulic Reference Manual recommends 0.1 for
+      gradual transitions and 0.3 for abrupt contractions.  A value of 0.0
+      implies no energy loss at a contraction, which is non-physical and will
+      under-predict upstream water-surface elevations.
+    severity: warning
+    citation: "HEC-RAS Hydraulic Reference Manual, Chapter 3: Theoretical Basis for One-Dimensional and Two-Dimensional Hydrodynamic Calculations"
+    citation_url: "https://www.hec.usace.army.mil/software/hec-ras/documentation/HEC-RAS_Hydraulic_Reference_Manual_v6.6.pdf#page=131"
+    check_type: range
+    parameters:
+      min: 0.1
+      max: 0.3
+    applies_to: geometry.cross_sections[].contraction
+
+  - id: FEMA-COEF-002
+    name: Expansion coefficient range
+    description: >
+      Expansion coefficients control energy losses where the flow area widens.
+      The HEC-RAS Hydraulic Reference Manual recommends 0.3 for gradual
+      expansions and 0.5 for abrupt expansions.  A value of 0.0 implies no
+      energy loss at an expansion, which is non-physical.  Values above 0.5
+      exceed the recommended maximum and should be justified.
+    severity: warning
+    citation: "HEC-RAS Hydraulic Reference Manual, Chapter 3: Theoretical Basis for One-Dimensional and Two-Dimensional Hydrodynamic Calculations"
+    citation_url: "https://www.hec.usace.army.mil/software/hec-ras/documentation/HEC-RAS_Hydraulic_Reference_Manual_v6.6.pdf#page=131"
+    check_type: range
+    parameters:
+      min: 0.3
+      max: 0.5
+    applies_to: geometry.cross_sections[].expansion
+
+  # ---------------------------------------------------------------------------
+  # Floodway Surcharge
+  # ---------------------------------------------------------------------------
+
+  - id: FEMA-FW-001
+    name: Floodway surcharge limit
+    description: >
+      Under FEMA regulations, a regulatory floodway must be defined such that
+      the cumulative increase in the base flood elevation (BFE) does not
+      exceed the community's adopted surcharge limit.  The federal maximum
+      is 1.0 foot; some communities adopt stricter limits (e.g. 0.5 ft or
+      0.0 ft "no-rise").  This check verifies the plan-file target surcharge
+      does not exceed the federal maximum.
+    severity: error
+    citation: "44 CFR 65.12 – Revision of flood insurance rate maps to reflect floodway designations"
+    citation_url: "https://www.ecfr.gov/current/title-44/section-65.12"
+    check_type: range
+    parameters:
+      min: 0.0
+      max: 1.0
+    applies_to: plan.encroachment.target_surcharge
+
+  # ---------------------------------------------------------------------------
+  # Required Flood Events
+  # ---------------------------------------------------------------------------
+
+  - id: FEMA-EVENT-001
+    name: 1-percent-annual-chance flood required
+    description: >
+      FEMA flood hazard mapping requires analysis of the 1-percent-annual-
+      chance (100-year) flood event.  The flow file must include a profile
+      whose name contains a recognized 100-year identifier so that base flood
+      elevations (BFEs) can be established.
+    severity: error
+    citation: "44 CFR 65.6(a)(6) – Information to support flood hazard determinations; 44 CFR 60.3(d) – Flood plain management criteria for flood-prone areas"
+    citation_url: "https://www.ecfr.gov/current/title-44/section-65.6#p-65.6(a)(6)"
+    check_type: custom
+    parameters:
+      handler: check_100yr_profile_exists
+      accepted_names:
+        - "100yr"
+        - "100-yr"
+        - "100 yr"
+        - "1pct"
+        - "1-pct"
+        - "1% Annual Chance"
+        - "Base Flood"
+    applies_to: flow.profile_names
+
+  # ---------------------------------------------------------------------------
+  # Bridge / Structure Checks
+  # ---------------------------------------------------------------------------
+
+  - id: FEMA-BRG-001
+    name: Bridge low chord vs. 1-percent flood
+    description: >
+      Bridge low-chord elevations should be evaluated against the 1-percent-
+      annual-chance flood elevation to determine freeboard, potential pressure
+      flow, and compliance with floodway regulations.  This check flags
+      bridges where the low chord exists so a downstream reviewer can compare
+      it against the computed BFE.  The actual comparison requires HDF result
+      data and is performed at report time.
+    severity: info
+    citation: "FEMA Guidelines and Specifications for Flood Hazard Mapping Partners, Volume 1, Section 3.3: Bridges and Culverts"
+    citation_url: "https://www.fema.gov/sites/default/files/nepa/Guidelines_and_Specifications_for_Flood_Hazard_Mapping_Partners_Volume_1-_Flood_Studies_and_Mapping__Apr_2003__SUPERSEDED.pdf#page=19"
+    check_type: exists
+    parameters: {}
+    applies_to: geometry.bridges[].min_low_chord
+
+  # ---------------------------------------------------------------------------
+  # Boundary Conditions
+  # ---------------------------------------------------------------------------
+
+  - id: FEMA-BC-001
+    name: Boundary conditions defined
+    description: >
+      Every reach endpoint must have an assigned boundary condition.  Missing
+      boundary conditions will cause HEC-RAS to fail or produce unreliable
+      results.  For steady-flow models each reach-profile combination needs
+      a boundary; for unsteady-flow models each Boundary Location block must
+      specify a hydrograph type or friction slope.
+    severity: error
+    citation: "FEMA Guidelines and Specifications for Flood Hazard Mapping Partners, Volume 1, Section 3.2: Hydraulic Analyses"
+    citation_url: "https://www.fema.gov/sites/default/files/nepa/Guidelines_and_Specifications_for_Flood_Hazard_Mapping_Partners_Volume_1-_Flood_Studies_and_Mapping__Apr_2003__SUPERSEDED.pdf#page=19"
+    check_type: custom
+    parameters:
+      handler: check_boundary_conditions_defined
+    applies_to: flow.boundaries

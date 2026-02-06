@@ -1,0 +1,168 @@
+# =============================================================================
+# Texas State Compliance Rules for HEC-RAS Models
+# =============================================================================
+#
+# These rules supplement the federal FEMA rules with Texas-specific
+# requirements from the Texas Administrative Code and Texas Water
+# Development Board (TWDB) guidance.
+#
+# Texas has stricter floodway and flood-event requirements than the
+# federal baseline.  Many Texas jurisdictions enforce a zero-rise
+# floodway standard, and the state requires modeling of four flood
+# frequencies rather than the single 1% event required federally.
+#
+# Jurisdiction note: Individual Texas communities may adopt standards
+# that are MORE restrictive than these state-level rules.  Always
+# verify local ordinances.
+# =============================================================================
+
+state: Texas
+state_abbreviation: TX
+supersedes:
+  - FEMA-FW-001  # Texas zero-rise replaces the federal 1.0 ft surcharge limit
+
+rules:
+
+  # ---------------------------------------------------------------------------
+  # Floodway — Zero-Rise Standard
+  # ---------------------------------------------------------------------------
+
+  - id: TX-FW-001
+    name: Zero-rise floodway requirement
+    description: >
+      Texas Administrative Code requires that floodway encroachments produce
+      no increase in the base flood elevation (BFE).  This is stricter than
+      the federal standard of 1.0 foot allowable surcharge.  The plan file's
+      encroachment target surcharge must be 0.0 ft.  Communities that have
+      NOT adopted the zero-rise standard may still fall under the federal
+      1.0-foot limit (FEMA-FW-001), but zero-rise is the default expectation
+      for Texas NFIP communities.
+    severity: error
+    citation: "Texas Water Code §16.3145; 44 CFR 60.3(d) – Zero-rise floodway standard adopted by Texas NFIP communities"
+    citation_url: "https://statutes.capitol.texas.gov/Docs/WA/htm/WA.16.htm#16.3145"
+    check_type: range
+    parameters:
+      min: 0.0
+      max: 0.0
+    applies_to: plan.encroachment.target_surcharge
+
+  # ---------------------------------------------------------------------------
+  # Required Flood Events
+  # ---------------------------------------------------------------------------
+
+  - id: TX-EVENT-001
+    name: 10-percent annual chance flood required
+    description: >
+      Texas requires analysis of the 10-percent-annual-chance (10-year)
+      flood event for floodplain delineation and stormwater management.
+      The flow file must include a profile whose name contains a recognized
+      10-year identifier.
+    severity: error
+    citation: "Texas Water Code §16.3145; TWDB Flood Study Guidelines"
+    citation_url: "https://statutes.capitol.texas.gov/Docs/WA/htm/WA.16.htm#16.3145"
+    check_type: custom
+    parameters:
+      handler: check_profile_exists
+      accepted_names:
+        - "10yr"
+        - "10-yr"
+        - "10 yr"
+        - "10pct"
+        - "10-pct"
+        - "10% Annual Chance"
+    applies_to: flow.profile_names
+
+  - id: TX-EVENT-002
+    name: 2-percent annual chance flood required
+    description: >
+      Texas requires analysis of the 2-percent-annual-chance (50-year)
+      flood event.  This intermediate event is used in floodplain
+      management and infrastructure design criteria.
+    severity: error
+    citation: "Texas Water Code §16.3145; TWDB Flood Study Guidelines"
+    citation_url: "https://statutes.capitol.texas.gov/Docs/WA/htm/WA.16.htm#16.3145"
+    check_type: custom
+    parameters:
+      handler: check_profile_exists
+      accepted_names:
+        - "50yr"
+        - "50-yr"
+        - "50 yr"
+        - "2pct"
+        - "2-pct"
+        - "2% Annual Chance"
+    applies_to: flow.profile_names
+
+  - id: TX-EVENT-003
+    name: 1-percent annual chance flood required
+    description: >
+      Texas requires analysis of the 1-percent-annual-chance (100-year)
+      flood event for base flood elevation (BFE) determination.  This is
+      also required federally, but Texas mandates it as part of a four-
+      event suite.
+    severity: error
+    citation: "Texas Water Code §16.3145; 44 CFR 65.6(a)(6)"
+    citation_url: "https://statutes.capitol.texas.gov/Docs/WA/htm/WA.16.htm#16.3145"
+    check_type: custom
+    parameters:
+      handler: check_profile_exists
+      accepted_names:
+        - "100yr"
+        - "100-yr"
+        - "100 yr"
+        - "1pct"
+        - "1-pct"
+        - "1% Annual Chance"
+        - "Base Flood"
+    applies_to: flow.profile_names
+
+  - id: TX-EVENT-004
+    name: 0.2-percent annual chance flood required
+    description: >
+      Texas requires analysis of the 0.2-percent-annual-chance (500-year)
+      flood event.  This event defines the shaded Zone X (500-year
+      floodplain) on Flood Insurance Rate Maps and is used for critical
+      facility siting and dam breach inundation mapping.
+    severity: error
+    citation: "Texas Water Code §16.3145; TWDB Flood Study Guidelines"
+    citation_url: "https://statutes.capitol.texas.gov/Docs/WA/htm/WA.16.htm#16.3145"
+    check_type: custom
+    parameters:
+      handler: check_profile_exists
+      accepted_names:
+        - "500yr"
+        - "500-yr"
+        - "500 yr"
+        - "0.2pct"
+        - "0.2-pct"
+        - "0.2% Annual Chance"
+    applies_to: flow.profile_names
+
+  # ---------------------------------------------------------------------------
+  # Freeboard
+  # ---------------------------------------------------------------------------
+
+  - id: TX-FB-001
+    name: Freeboard requirement (manual review)
+    description: >
+      Many Texas jurisdictions require freeboard above the base flood
+      elevation for new construction.  Common requirements range from
+      1 foot to 3 feet above the BFE depending on the community's flood
+      damage prevention ordinance.  Because the specific freeboard
+      requirement varies by jurisdiction, this rule flags the model for
+      manual review rather than enforcing a specific value.  The reviewer
+      should verify the applicable local freeboard ordinance and confirm
+      that finished floor elevations meet or exceed BFE plus the required
+      freeboard.
+    severity: info
+    citation: "Texas Water Code §16.3145; local flood damage prevention ordinances (varies by jurisdiction)"
+    citation_url: "https://statutes.capitol.texas.gov/Docs/WA/htm/WA.16.htm#16.3145"
+    check_type: custom
+    parameters:
+      handler: flag_for_manual_review
+      review_note: >
+        Verify the applicable local freeboard ordinance.  Common Texas
+        requirements: 1 ft residential, 1.5 ft commercial, 2-3 ft for
+        critical facilities.  Check the community's flood damage
+        prevention ordinance for the exact requirement.
+    applies_to: plan.encroachment.target_surcharge

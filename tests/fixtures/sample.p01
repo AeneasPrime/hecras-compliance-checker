@@ -1,0 +1,71 @@
+Plan Title=Beargrass Creek Floodplain Delineation
+Program Version=6.10
+Short Identifier=BearFP
+
+Current Plan
+Current Geom
+Current Unsteady File
+Current Steady File
+Current Quasi Unsteady File
+
+Simulation Date=01Jan2024,01Jan2024
+
+Geom File=g01
+Flow File=f01
+Subcritical Flow
+
+Plan Type= 1
+
+Profiles= 4
+Profile Names=10yr,50yr,100yr,500yr
+
+Critical Always Calculated= 0
+
+Flow Tolerance= 0.01
+Wl Tolerance= 0.01
+
+Warm Up= 0
+
+Run HTab= 1
+Run Post Process= 1
+
+Echo Input= 0
+Echo Parameters= 0
+Echo Output= 0
+
+Write IC File= 0
+Write Detailed= 0
+
+Friction Slope Method= 2
+
+Log Output Level= 0
+
+Computation Interval=
+Output Interval=
+Mapping Interval=
+Hydrograph Output Interval=
+Detailed Output Interval=
+Instantaneous Interval=
+
+Flow Ratio= 0.01
+
+Split Flow Opt= 0
+
+Flow Tolerance Method= 0
+
+Check Data= 0
+
+Run Sed= 0
+
+Paused= 0
+
+Run UNET= 0
+
+Run RAS Mapper= 0
+
+Encroach Param= -1 ,0 ,0 ,0
+Encroach Method= 4
+Encroach Val 1= 1
+Encroach Val 2= 0
+Encroach Val 3= 0
+Encroach Val 4= 0

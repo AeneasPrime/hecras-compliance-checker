@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Compliance Report - {{ model_name }}{% endblock %}
+
+{% block content %}
+
+{# ---- Header metadata ---- #}
+<div class="card">
+  <h2>Compliance Report</h2>
+  <table style="width: auto; font-size: 0.9rem;">
+    <tr><td style="font-weight: 600; padding-right: 24px; border: none;">Model</td><td style="border: none;"><code>{{ model_name }}</code></td></tr>
+    <tr><td style="font-weight: 600; padding-right: 24px; border: none;">Date</td><td style="border: none;">{{ today }}</td></tr>
+    <tr><td style="font-weight: 600; padding-right: 24px; border: none;">Federal Rules</td><td style="border: none;">FEMA Guidelines &amp; Specifications</td></tr>
+    <tr><td style="font-weight: 600; padding-right: 24px; border: none;">State Rules</td><td style="border: none;">{{ state_label or 'None' }}</td></tr>
+  </table>
+</div>
+
+{# ---- Executive Summary ---- #}
+<div class="card">
+  <h2>Executive Summary</h2>
+
+  <div class="summary-grid">
+    <div class="summary-box bg-pass">
+      <div class="count">{{ n_pass }}</div>
+      <div class="label">Passed</div>
+    </div>
+    <div class="summary-box bg-fail">
+      <div class="count">{{ n_fail }}</div>
+      <div class="label">Failed</div>
+    </div>
+    <div class="summary-box bg-warn">
+      <div class="count">{{ n_warn }}</div>
+      <div class="label">Warnings</div>
+    </div>
+    <div class="summary-box bg-skip">
+      <div class="count">{{ n_skip }}</div>
+      <div class="label">Skipped</div>
+    </div>
+  </div>
+
+  {% if n_fail == 0 and n_warn == 0 %}
+    <p style="color: #16a34a; font-weight: 600;">All checks passed. No compliance issues detected.</p>
+  {% elif n_fail == 0 %}
+    <p style="color: #d97706; font-weight: 600;">No critical failures. {{ n_warn }} warning(s) require review.</p>
+  {% else %}
+    <p style="color: #dc2626; font-weight: 600;">{{ n_fail }} critical failure(s) must be resolved before submission.</p>
+  {% endif %}
+</div>
+
+{# ---- Critical Failures ---- #}
+{% if failures %}
+<div class="card">
+  <h2 style="color: #dc2626;">Critical Failures</h2>
+  {% for r in failures %}
+    <div class="failure-item">
+      <h4>{{ r.rule_id }} &mdash; {{ r.rule_name }}{% if r.location %} at {{ r.location }}{% endif %}</h4>
+      <p><strong>Model has:</strong> <code>{{ r.actual_value }}</code></p>
+      <p><strong>Required:</strong> <code>{{ r.expected_value }}</code></p>
+      <p>{{ r.message }}</p>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{# ---- Detailed Results ---- #}
+<div class="card">
+  <h2>Detailed Results</h2>
+
+  {% for category, cat_results in categories %}
+    <h3 style="color: #29416a; margin: 20px 0 8px; font-size: 1rem;">{{ category }}</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 70px;">Status</th>
+          <th>Rule</th>
+          <th>Location</th>
+          <th>Model Value</th>
+          <th>Required</th>
+          <th>Citation</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in cat_results %}
+        <tr>
+          <td>
+            {% if r.status == 'PASS' %}
+              <span class="badge bg-pass">PASS</span>
+            {% elif r.status == 'FAIL' %}
+              <span class="badge bg-fail">FAIL</span>
+            {% elif r.status == 'WARNING' %}
+              <span class="badge bg-warn">WARN</span>
+            {% else %}
+              <span class="badge bg-skip">SKIP</span>
+            {% endif %}
+          </td>
+          <td>{{ r.rule_name }}</td>
+          <td>{{ r.location or '&mdash;' }}</td>
+          <td><code>{{ r.actual_value or '&mdash;' }}</code></td>
+          <td><code>{{ r.expected_value or '&mdash;' }}</code></td>
+          <td style="text-align: center;">
+            {% if r.citation_url %}
+              <a href="{{ r.citation_url }}" target="_blank" rel="noopener" title="{{ r.citation }}" style="font-size: 1.1rem; text-decoration: none;">📄</a>
+            {% else %}
+              <span style="color: #6b7280;">&mdash;</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endfor %}
+</div>
+
+{# ---- Recommendations ---- #}
+{% if actionable %}
+<div class="card">
+  <h2>Recommendations</h2>
+  {% for r in actionable %}
+    {% if r.status == 'FAIL' %}
+    <div class="failure-item">
+      <h4>[FAIL] {{ r.rule_id }} &mdash; {{ r.rule_name }}{% if r.location %} at {{ r.location }}{% endif %}</h4>
+      <p><strong>Issue:</strong> {{ r.message }}</p>
+      <p style="font-size: 0.8rem; color: #888; font-style: italic;">{% if r.citation_url %}<a href="{{ r.citation_url }}" target="_blank" rel="noopener" style="color: #2563eb;">📄 {{ r.citation }}</a>{% else %}{{ r.citation }}{% endif %}</p>
+      <p><strong>Action:</strong> Correct the value from <code>{{ r.actual_value }}</code> to within the required range of <code>{{ r.expected_value }}</code>. Re-run the model after making corrections.</p>
+    </div>
+    {% else %}
+    <div class="warning-item">
+      <h4>[WARN] {{ r.rule_id }} &mdash; {{ r.rule_name }}{% if r.location %} at {{ r.location }}{% endif %}</h4>
+      <p><strong>Issue:</strong> {{ r.message }}</p>
+      <p style="font-size: 0.8rem; color: #888; font-style: italic;">{% if r.citation_url %}<a href="{{ r.citation_url }}" target="_blank" rel="noopener" style="color: #2563eb;">📄 {{ r.citation }}</a>{% else %}{{ r.citation }}{% endif %}</p>
+      <p><strong>Action:</strong> Review the value <code>{{ r.actual_value }}</code> against the expected <code>{{ r.expected_value }}</code>. Provide justification if the current value is intentional.</p>
+    </div>
+    {% endif %}
+  {% endfor %}
+</div>
+{% endif %}
+
+{# ---- Actions ---- #}
+<div style="display: flex; gap: 12px; margin-top: 8px;">
+  <a href="{{ url_for('download_pdf', session_id=session_id) }}" class="btn btn-primary">Download PDF Report</a>
+  <a href="{{ url_for('index') }}" class="btn btn-secondary">Review Another Model</a>
+</div>
+
+{% endblock %}

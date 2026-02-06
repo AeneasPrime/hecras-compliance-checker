@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: hecras-compliance-checker
+    runtime: python
+    buildCommand: pip install .
+    startCommand: gunicorn hecras_compliance.web.app:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12"
+      - key: SECRET_KEY
+        generateValue: true

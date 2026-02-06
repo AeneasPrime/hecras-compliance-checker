@@ -1,0 +1,114 @@
+# =============================================================================
+# Maine State Compliance Rules for HEC-RAS Models
+# =============================================================================
+#
+# These rules supplement the federal FEMA rules with Maine-specific
+# requirements from Maine Title 38 (Waters and Navigation), the Maine
+# Floodplain Management Program (DACF), and Maine's model floodplain
+# management ordinance.
+#
+# Key differences from the federal baseline:
+#   - Maine follows the federal 1.0-foot floodway surcharge for mapped
+#     floodways (no zero-rise override), so FEMA-FW-001 is NOT superseded
+#   - Maine's model ordinance requires 1 foot of freeboard above BFE for
+#     the lowest floor of new residential construction
+#   - Maine recommends modeling the 0.2% annual chance (500-year) flood
+#     for Flood Insurance Rate Map delineation of shaded Zone X
+#   - Coastal V-zone requirements exist but do not apply to riverine
+#     HEC-RAS modeling
+#
+# Jurisdiction note: Individual Maine communities may adopt standards
+# that are MORE restrictive than these state-level rules.  Many
+# Community Rating System (CRS) communities require additional freeboard
+# or modeling of multiple flood frequencies.  Always verify local
+# ordinances.
+# =============================================================================
+
+state: Maine
+state_abbreviation: ME
+supersedes: []
+  # Maine does NOT supersede the federal floodway surcharge (FEMA-FW-001).
+  # The state follows the standard 1.0-foot maximum surcharge for regulatory
+  # floodways per 44 CFR 60.3(d).
+
+rules:
+
+  # ---------------------------------------------------------------------------
+  # Required Flood Events
+  # ---------------------------------------------------------------------------
+
+  - id: ME-EVENT-001
+    name: 1-percent annual chance flood required
+    description: >
+      Maine requires analysis of the 1-percent-annual-chance (100-year)
+      flood event for base flood elevation (BFE) determination on all
+      FEMA flood studies.  This is consistent with the federal requirement
+      but is explicitly mandated by Maine's model floodplain ordinance
+      for all participating NFIP communities.
+    severity: error
+    citation: "Maine Model Floodplain Management Ordinance, Section VII; 44 CFR 60.3(d); Maine Title 38, Chapter 3, Subchapter 1, Article 5-A"
+    citation_url: "https://www.ecfr.gov/current/title-44/section-60.3#p-60.3(d)"
+    check_type: custom
+    parameters:
+      handler: check_profile_exists
+      accepted_names:
+        - "100yr"
+        - "100-yr"
+        - "100 yr"
+        - "1pct"
+        - "1-pct"
+        - "1% Annual Chance"
+        - "Base Flood"
+    applies_to: flow.profile_names
+
+  - id: ME-EVENT-002
+    name: 0.2-percent annual chance flood required
+    description: >
+      Maine recommends analysis of the 0.2-percent-annual-chance (500-year)
+      flood event for delineation of shaded Zone X on Flood Insurance Rate
+      Maps.  The 500-year floodplain is used for critical facility siting
+      decisions and dam breach inundation mapping under the Maine Dam
+      Safety Program (Title 37-B, Chapter 24).
+    severity: warning
+    citation: "Maine Floodplain Management Program Guidance; FEMA Flood Insurance Study Guidelines; Maine Title 37-B, Chapter 24 – Dam Safety"
+    citation_url: "https://legislature.maine.gov/statutes/37-B/title37-Bch24sec0.html"
+    check_type: custom
+    parameters:
+      handler: check_profile_exists
+      accepted_names:
+        - "500yr"
+        - "500-yr"
+        - "500 yr"
+        - "0.2pct"
+        - "0.2-pct"
+        - "0.2% Annual Chance"
+    applies_to: flow.profile_names
+
+  # ---------------------------------------------------------------------------
+  # Freeboard
+  # ---------------------------------------------------------------------------
+
+  - id: ME-FB-001
+    name: Freeboard requirement (manual review)
+    description: >
+      Maine's model floodplain management ordinance requires the lowest
+      floor (including basement) of new residential construction to be
+      elevated at least one foot above the base flood elevation (BFE).
+      Non-residential structures must be floodproofed to at least one
+      foot above BFE.  Many Maine communities participating in the
+      Community Rating System (CRS) adopt higher freeboard standards
+      (2-3 feet).  Because the exact requirement varies by community
+      ordinance, this rule flags the model for manual review.
+    severity: info
+    citation: "Maine Model Floodplain Management Ordinance, Section VIII.H; 44 CFR 60.3(c)(2); Maine DACF Floodplain Management Program guidance"
+    citation_url: "https://www.ecfr.gov/current/title-44/section-60.3#p-60.3(c)(2)"
+    check_type: custom
+    parameters:
+      handler: flag_for_manual_review
+      review_note: >
+        Verify the applicable local freeboard ordinance.  Maine's minimum
+        state standard is 1 foot above BFE for residential and non-
+        residential structures.  CRS communities may require 2-3 feet.
+        Check the community's adopted floodplain management ordinance
+        for the exact freeboard requirement.
+    applies_to: plan.encroachment.target_surcharge

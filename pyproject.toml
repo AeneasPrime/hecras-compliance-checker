@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hecras-compliance-checker"
+version = "0.1.0"
+description = "HEC-RAS model compliance checker"
+requires-python = ">=3.10"
+dependencies = [
+    "h5py",
+    "pyyaml",
+    "click",
+    "fpdf2",
+    "flask",
+    "gunicorn",
+]
+
+[project.scripts]
+hecras-check = "hecras_compliance:main"
+hecras-web = "hecras_compliance.web.app:run_web"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+hecras_compliance = [
+    "config/*.yaml",
+    "config/states/*.yaml",
+    "web/templates/*.html",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = ["pytest"]

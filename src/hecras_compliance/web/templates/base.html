@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}HEC-RAS Compliance Checker{% endblock %}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    header {
+      background: #29416a;
+      color: #fff;
+      padding: 16px 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    header .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    header h1 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    header .subtitle {
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    main {
+      padding: 32px 0 64px;
+    }
+
+    .flash-messages {
+      margin-bottom: 20px;
+    }
+
+    .flash {
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+
+    .flash.error {
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .flash.success {
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #888;
+      font-size: 0.8rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    /* Cards */
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 28px 32px;
+      margin-bottom: 24px;
+    }
+
+    .card h2 {
+      font-size: 1.25rem;
+      color: #29416a;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-block;
+      padding: 10px 28px;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .btn-primary {
+      background: #29416a;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #1e3354;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .btn-secondary:hover {
+      background: #d1d5db;
+    }
+
+    /* Forms */
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #374151;
+      font-size: 0.9rem;
+    }
+
+    select, input[type="file"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      background: #fff;
+      margin-bottom: 20px;
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: #29416a;
+      box-shadow: 0 0 0 3px rgba(41,65,106,0.15);
+    }
+
+    /* Status colors */
+    .status-pass { color: #16a34a; }
+    .status-fail { color: #dc2626; }
+    .status-warn { color: #d97706; }
+    .status-skip { color: #9ca3af; }
+
+    .bg-pass { background: #16a34a; }
+    .bg-fail { background: #dc2626; }
+    .bg-warn { background: #d97706; }
+    .bg-skip { background: #9ca3af; }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    th {
+      background: #29416a;
+      color: #fff;
+      padding: 8px 10px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    /* Summary boxes */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .summary-box {
+      text-align: center;
+      padding: 16px 8px;
+      border-radius: 8px;
+      color: #fff;
+    }
+
+    .summary-box .count {
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .summary-box .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 4px;
+      opacity: 0.9;
+    }
+
+    /* Failure cards */
+    .failure-item {
+      border-left: 4px solid #dc2626;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      background: #fef2f2;
+      border-radius: 0 6px 6px 0;
+    }
+
+    .failure-item h4 {
+      color: #dc2626;
+      font-size: 0.9rem;
+    }
+
+    .failure-item p {
+      font-size: 0.85rem;
+      color: #555;
+      margin-top: 4px;
+    }
+
+    /* Warning items */
+    .warning-item {
+      border-left: 4px solid #d97706;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      background: #fffbeb;
+      border-radius: 0 6px 6px 0;
+    }
+
+    .warning-item h4 {
+      color: #d97706;
+      font-size: 0.9rem;
+    }
+
+    .warning-item p {
+      font-size: 0.85rem;
+      color: #555;
+      margin-top: 4px;
+    }
+
+    /* Status badge */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* File upload area */
+    .upload-area {
+      border: 2px dashed #d1d5db;
+      border-radius: 8px;
+      padding: 32px;
+      text-align: center;
+      margin-bottom: 20px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .upload-area:hover {
+      border-color: #29416a;
+      background: #f8fafc;
+    }
+
+    .upload-area input[type="file"] {
+      border: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .upload-area p {
+      color: #6b7280;
+      font-size: 0.85rem;
+      margin-top: 8px;
+    }
+
+    .help-text {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-top: -14px;
+      margin-bottom: 20px;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .container {
+        padding: 0 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div>
+        <h1>HEC-RAS Compliance Checker</h1>
+        <span class="subtitle">Automated regulatory review for hydraulic models</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-messages">
+            {% for category, message in messages %}
+              <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      This tool does not replace engineering judgment. All results must be reviewed by a licensed Professional Engineer (PE).
+    </div>
+  </footer>
+</body>
+</html>

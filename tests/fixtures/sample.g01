@@ -1,0 +1,227 @@
+Geom Title=Beargrass Creek Sample Geometry
+
+BEGIN HEADER:
+DTM Date=14Mar2024
+END HEADER:
+
+River Reach=Beargrass Creek,Upper Reach
+Reach XY= 7
+  490200, 4267000
+  490220, 4266000
+  490210, 4265100
+  490200, 4265000
+  490190, 4264900
+  490180, 4264000
+  490200, 4263000
+Rch Text X Y=  490200, 4265000
+Reverse River Text= 0
+
+Type RM Length L Ch R = 1 ,5000   ,1200   ,1000   ,1200
+BEGIN DESCRIPTION:
+Upstream boundary cross section - typical natural channel
+END DESCRIPTION:
+
+XS GIS Cut Line= 3
+  489900, 4267000
+  490200, 4267000
+  490500, 4267000
+
+#Sta/Elev= 13
+       0   530.2      50   527.1     100   524.5     150   521.8     200   518.4
+     250     515     275   512.3     300   513.5     350   518.4     400   521.8
+     450   524.5     500   527.1     550   530.2
+
+#Mann= 3 , 0
+     .06       0       0    .035     200       0     .06     350       0
+
+Bank Sta=200,350
+
+XS Rating Curve= 0 ,0
+
+Exp/Cntr=0.3,0.1
+
+Node Last Edited Time=Mar/14/2024 09:30:15
+
+Type RM Length L Ch R = 1 ,4000   ,1000   ,900    ,1000
+BEGIN DESCRIPTION:
+Left overbank ineffective flow area - upstream of bridge
+END DESCRIPTION:
+
+XS GIS Cut Line= 3
+  489900, 4266000
+  490220, 4266000
+  490520, 4266000
+
+#Sta/Elev= 11
+       0   528.5      50   525.3     100     522     180   517.2     230   513.4
+     260   510.1     290   511.8     330   517.2     400     522     450   525.3
+     500   528.5
+
+#Mann= 3 , 0
+     .08       0       0     .04     180       0     .08     330       0
+
+Bank Sta=180,330
+
+#IEffective= 1 , 0
+       0     520       0     100     520       0
+
+XS Rating Curve= 0 ,0
+
+Exp/Cntr=0.3,0.1
+
+Node Last Edited Time=Mar/14/2024 09:32:47
+
+Type RM Length L Ch R = 1 ,3100   ,150    ,100    ,150
+BEGIN DESCRIPTION:
+Bridge approach section - upstream face
+END DESCRIPTION:
+
+XS GIS Cut Line= 3
+  489900, 4265100
+  490210, 4265100
+  490520, 4265100
+
+#Sta/Elev= 11
+       0   526.8      50   523.7     100   520.5     175   516.3     225   512.5
+     250   508.5     275   510.2     320   516.3     380   520.5     430   523.7
+     480   526.8
+
+#Mann= 3 , 0
+     .05       0       0    .035     175       0     .05     320       0
+
+Bank Sta=175,320
+
+XS Rating Curve= 0 ,0
+
+Exp/Cntr=0.5,0.3
+
+Node Last Edited Time=Mar/14/2024 09:35:22
+
+Type RM Length L Ch R = 6 ,3000   ,150    ,100    ,150
+BEGIN DESCRIPTION:
+Main Street Bridge - 2 lane road crossing over Beargrass Creek
+END DESCRIPTION:
+
+Node Name=Main St Bridge
+
+#Deck/Roadway= 5 ,    40
+       0     528   526.5     175     528     523     250     528     522
+     320     528     523     480     528   526.5
+
+BC Design Weir Coef=   2.6 ,   2.6 , 0
+Deck Dist=    20 ,    20
+US Boundary Condition Sta=     175 ,     320
+DS Boundary Condition Sta=     170 ,     320
+
+Bridge Skew= 0
+
+#Pier= 1
+Pier Skew= 0
+Center Sta Upstream=     245
+Center Sta Downstream=     245
+
+#Pier Elev= 3
+     507       3     515     3.5     522       5
+
+Up Bridge XSGIS= 3
+  489900, 4265020
+  490200, 4265020
+  490500, 4265020
+Down Bridge XSGIS= 3
+  489900, 4264980
+  490200, 4264980
+  490500, 4264980
+
+Bridge Modeling Approach= 0 , 0 , 0 , 0
+Bridge HTab Starting El and Inc=   507 ,   0.5 ,    50
+Bridge HTab BC Min and Max=   507 ,   530
+BC= 0
+Bridge Coef PI Yarnell=    .9 ,     3 , 1.25 ,    .5
+Bridge Coef Momentum=     0
+Bridge Coef Energy=  .28 ,  .25 ,     1 , 1.25 ,    .5 ,   .3 ,  .25 ,     1 , 1.25 ,    .5
+Bridge WSPRO Data Coef=    .9 ,   5.1
+Bridge WSPRO Min Lo Chord=     0
+
+Node Last Edited Time=Mar/14/2024 09:40:08
+
+Type RM Length L Ch R = 1 ,2900   ,1000   ,900    ,1000
+BEGIN DESCRIPTION:
+Bridge departure section - downstream face with ineffective flow areas
+END DESCRIPTION:
+
+XS GIS Cut Line= 3
+  489900, 4264900
+  490190, 4264900
+  490500, 4264900
+
+#Sta/Elev= 11
+       0   526.2      50   523.1     100   519.8     170   515.7     220   511.9
+     245   507.8     270   509.6     320   515.7     380   519.8     430   523.1
+     480   526.2
+
+#Mann= 3 , 0
+     .05       0       0    .035     170       0     .05     320       0
+
+Bank Sta=170,320
+
+#IEffective= 2 , 0
+       0     519       0     100     519       0
+     380     519       0     480     519       0
+
+XS Rating Curve= 0 ,0
+
+Exp/Cntr=0.5,0.3
+
+Node Last Edited Time=Mar/14/2024 09:42:33
+
+Type RM Length L Ch R = 1 ,2000   ,1100   ,1000   ,1100
+BEGIN DESCRIPTION:
+WARNING: Manning n values are placeholder - needs calibration review
+END DESCRIPTION:
+
+XS GIS Cut Line= 3
+  489900, 4264000
+  490180, 4264000
+  490500, 4264000
+
+#Sta/Elev= 11
+       0     524      50     521     100   518.2     170   514.8     220     511
+     250   505.2     280   507.4     330   514.8     400   518.2     450     521
+     500     524
+
+#Mann= 3 , 0
+    .001       0       0    .001     170       0    .001     330       0
+
+Bank Sta=170,330
+
+XS Rating Curve= 0 ,0
+
+Exp/Cntr=0.0,0.1
+
+Node Last Edited Time=Mar/14/2024 09:45:10
+
+Type RM Length L Ch R = 1 ,1000   ,0      ,0      ,0
+BEGIN DESCRIPTION:
+Downstream boundary cross section
+END DESCRIPTION:
+
+XS GIS Cut Line= 3
+  489900, 4263000
+  490200, 4263000
+  490500, 4263000
+
+#Sta/Elev= 11
+       0   522.5      50   519.6     100   516.8     170   513.5     220   509.8
+     250   503.8     280   506.2     330   513.5     400   516.8     450   519.6
+     500   522.5
+
+#Mann= 3 , 0
+     .06       0       0    .035     170       0     .06     330       0
+
+Bank Sta=170,330
+
+XS Rating Curve= 0 ,0
+
+Exp/Cntr=0.3,0.1
+
+Node Last Edited Time=Mar/14/2024 09:47:55

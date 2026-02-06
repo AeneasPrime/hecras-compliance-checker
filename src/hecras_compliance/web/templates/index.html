@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Model - HEC-RAS Compliance Checker{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+  <h2>Review Your Model</h2>
+  <p style="color: #6b7280; margin-bottom: 24px; font-size: 0.9rem;">
+    Upload your HEC-RAS project files to check compliance against
+    federal and state regulatory rules.
+  </p>
+
+  <form action="{{ url_for('review') }}" method="post" enctype="multipart/form-data">
+
+    <label for="state">Jurisdiction</label>
+    <select name="state" id="state">
+      <option value="">Federal (FEMA) only</option>
+      {% for s in states %}
+        <option value="{{ s.key }}">{{ s.name }} + Federal</option>
+      {% endfor %}
+    </select>
+
+    <label for="files">Model Files</label>
+    <div class="upload-area">
+      <input type="file" name="files" id="files" multiple
+             accept=".prj,.g01,.g02,.g03,.g04,.g05,.p01,.p02,.p03,.p04,.p05,.f01,.f02,.f03,.f04,.f05,.u01,.u02,.u03,.u04,.u05">
+      <p>Select your .prj file and all associated files (.g01, .p01, .f01, etc.)</p>
+    </div>
+    <p class="help-text">
+      All files must share the same base name (e.g. <code>sample.prj</code>,
+      <code>sample.g01</code>, <code>sample.p01</code>, <code>sample.f01</code>).
+    </p>
+
+    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
+      Review
+    </button>
+
+  </form>
+</div>
+
+<div style="max-width: 600px; margin: 24px auto 0; text-align: center;">
+  <p style="color: #9ca3af; font-size: 0.8rem;">
+    Checks Manning's n values, expansion/contraction coefficients, floodway surcharge,
+    required flood events, bridge data, and boundary conditions.
+  </p>
+</div>
+{% endblock %}
