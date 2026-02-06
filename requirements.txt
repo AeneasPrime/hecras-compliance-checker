@@ -1,0 +1,5 @@
+pyyaml
+click
+fpdf2
+flask
+gunicorn

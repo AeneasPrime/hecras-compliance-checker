@@ -2,7 +2,7 @@ services:
   - type: web
     name: hecras-compliance-checker
     runtime: python
-    buildCommand: pip install .
+    buildCommand: pip install -r requirements.txt && pip install .
     startCommand: gunicorn hecras_compliance.web.app:app --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION
